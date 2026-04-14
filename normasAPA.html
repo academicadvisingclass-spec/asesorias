@@ -901,7 +901,7 @@ const done = { 1:true, 2:false, 3:false, 4:false };
 // ════════════════════════════════
 //  HELPERS
 // ════════════════════════════════
-const round5k = n => Math.round(n/5000)*5000;
+const round5k = n => Math.ceil(n/5000)*5000;
 const cop = n => '$' + round5k(n).toLocaleString('es-CO');
 
 function isReady(){
