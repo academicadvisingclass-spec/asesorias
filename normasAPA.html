@@ -48,13 +48,7 @@ header {
   max-height: 500px;
   transition: max-height .45s cubic-bezier(.4,0,.2,1), padding .45s cubic-bezier(.4,0,.2,1), opacity .3s ease;
 }
-header.collapsed {
-  max-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  opacity: 0;
-  pointer-events: none;
-}
+
 .header-orb {
   position: absolute;
   border-radius: 50%;
@@ -1168,15 +1162,6 @@ if(rp){
   },{threshold:0.1});
   rpObs.observe(rp);
 }
-
-// ════════════════════════════════
-//  HEADER COLLAPSE ON SCROLL
-// ════════════════════════════════
-const hdr = document.querySelector('header');
-window.addEventListener('scroll', ()=>{
-  if(window.scrollY > 100) hdr.classList.add('collapsed');
-  else if(window.scrollY < 20) hdr.classList.remove('collapsed');
-}, { passive: true });
 
 // ════════════════════════════════
 render();
