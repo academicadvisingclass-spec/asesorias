@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Cotizador de Corrección Académica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #0d1b2a;
+  --navy2:   #1a3450;
+  --gold:    #c9952a;
+  --gold-lt: #e8b84b;
+  --cream:   #faf7f2;
+  --paper:   #f2ece0;
+  --smoke:   #e4ddd2;
+  --text:    #1c1410;
+  --muted:   #6b6258;
+  --white:   #ffffff;
+  --green:   #2d7a4f;
+  --r:       14px;
+  --sh:      0 2px 20px rgba(13,27,42,.08);
+  --sh2:     0 12px 48px rgba(13,27,42,.18);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-bottom: 88px;
+  overflow-x: hidden;
+}
+@media (min-width: 821px) { body { padding-bottom: 0; } }
+
+/* ═══════════════════════════════
+   HEADER
+═══════════════════════════════ */
+header {
+  background: var(--navy);
+  padding: 52px 20px 44px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  max-height: 500px;
+  transition: max-height .45s cubic-bezier(.4,0,.2,1), padding .45s cubic-bezier(.4,0,.2,1), opacity .3s ease;
+}
+header.collapsed {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.header-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: drift 8s ease-in-out infinite;
+}
+.header-orb-1 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(201,149,42,.18) 0%, transparent 70%);
+  bottom: -100px; left: -80px;
+  animation-delay: 0s;
+}
+.header-orb-2 {
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(201,149,42,.12) 0%, transparent 70%);
+  top: -60px; right: -40px;
+  animation-delay: -3s;
+}
+.header-orb-3 {
+  width: 150px; height: 150px;
+  background: radial-gradient(circle, rgba(100,160,255,.08) 0%, transparent 70%);
+  bottom: 20px; right: 20%;
+  animation-delay: -5s;
+}
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(20px, -15px) scale(1.05); }
+  66%       { transform: translate(-10px, 10px) scale(.96); }
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(201,149,42,.18);
+  border: 1px solid rgba(201,149,42,.35);
+  color: var(--gold-lt);
+  font-size: .72rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 5px 14px; border-radius: 99px;
+  margin-bottom: 16px; position: relative;
+  animation: fadeDown .6s ease both;
+}
+header h1 {
+  font-size: clamp(1.7rem, 6vw, 3rem);
+  font-weight: 800; color: #fff;
+  line-height: 1.12; position: relative;
+  animation: fadeDown .6s ease .1s both;
+}
+header h1 span { color: var(--gold-lt); }
+header p {
+  margin-top: 12px; color: rgba(255,255,255,.6);
+  font-size: clamp(.82rem, 3vw, .95rem);
+  font-weight: 300; max-width: 500px;
+  margin-inline: auto; position: relative;
+  animation: fadeDown .6s ease .2s both;
+}
+@keyframes fadeDown {
+  from { opacity:0; transform: translateY(-14px); }
+  to   { opacity:1; transform: none; }
+}
+
+/* ═══════════════════════════════
+   PROGRESS BAR
+═══════════════════════════════ */
+.progress-wrap {
+  background: var(--navy2);
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(0,0,0,.25);
+}
+.progress-bar {
+  display: flex;
+  max-width: 1080px;
+  margin: 0 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.progress-bar::-webkit-scrollbar { display: none; }
+.prog-step {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px 12px 0;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+.prog-step:not(:last-child)::after {
+  content: '›';
+  color: rgba(255,255,255,.2);
+  font-size: 1.1rem; margin-right: 8px;
+}
+.prog-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(255,255,255,.12);
+  color: rgba(255,255,255,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .7rem; font-weight: 700;
+  transition: all .3s;
+  flex-shrink: 0;
+}
+.prog-lbl {
+  font-size: .72rem; font-weight: 600;
+  color: rgba(255,255,255,.35);
+  letter-spacing: .03em;
+  white-space: nowrap;
+  transition: color .3s;
+}
+.prog-step.done .prog-num {
+  background: var(--green);
+  color: var(--white);
+}
+.prog-step.done .prog-lbl  { color: rgba(255,255,255,.65); }
+.prog-step.active .prog-num { background: var(--gold); color: var(--navy); }
+.prog-step.active .prog-lbl { color: var(--gold-lt); }
+
+/* ═══════════════════════════════
+   AUTHOR BANNER
+═══════════════════════════════ */
+.author-banner {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+  border-bottom: 2px solid rgba(201,149,42,.25);
+  padding: 14px 20px;
+}
+.author-inner {
+  max-width: 1080px; margin: 0 auto;
+  display: flex; align-items: center; gap: 14px;
+  flex-wrap: wrap;
+}
+.author-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-lt) 100%);
+  color: var(--navy); font-weight: 800; font-size: .9rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; box-shadow: 0 2px 10px rgba(201,149,42,.35);
+}
+.author-info { flex: 1; min-width: 160px; }
+.author-name {
+  font-weight: 700; font-size: .9rem; color: var(--white);
+  letter-spacing: .02em;
+}
+.author-cred {
+  font-size: .72rem; color: rgba(255,255,255,.55);
+  margin-top: 1px; line-height: 1.4;
+}
+.author-stats {
+  display: flex; gap: 18px; flex-shrink: 0;
+}
+.stat { text-align: center; }
+.stat-n {
+  display: block; font-size: 1.1rem; font-weight: 800;
+  color: var(--gold-lt); line-height: 1;
+}
+.stat-l {
+  display: block; font-size: .62rem; color: rgba(255,255,255,.45);
+  text-transform: uppercase; letter-spacing: .06em; margin-top: 2px;
+}
+@media (max-width: 480px) {
+  .author-stats { display: none; }
+}
+
+/* ═══════════════════════════════
+   LAYOUT
+═══════════════════════════════ */
+.page { max-width: 1080px; margin: 0 auto; padding: 0 14px; }
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 330px;
+  gap: 24px;
+  padding: 28px 0 48px;
+  align-items: start;
+}
+@media (max-width: 820px) {
+  .layout { grid-template-columns: 1fr; padding: 14px 0 20px; gap: 0; }
+  .results-panel { display: none; }
+}
+
+/* ═══════════════════════════════
+   CARDS
+═══════════════════════════════ */
+.card {
+  background: var(--white);
+  border-radius: var(--r);
+  box-shadow: var(--sh);
+  padding: 22px 20px;
+  margin-bottom: 16px;
+  transition: box-shadow .25s, transform .25s;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.card.visible {
+  opacity: 1;
+  transform: none;
+  transition: opacity .4s ease, transform .4s ease, box-shadow .25s, border .2s;
+}
+.card:hover { box-shadow: var(--sh2); }
+.card:last-child { margin-bottom: 0; }
+.card.step-done { border-left: 3px solid var(--green); }
+
+.step-lbl {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 3px;
+}
+.step-lbl .snum {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--gold); color: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .68rem; font-weight: 700; flex-shrink: 0;
+  transition: background .3s, transform .3s;
+}
+.card.step-done .step-lbl .snum {
+  background: var(--green);
+  transform: scale(1.1);
+}
+.card.step-done .step-lbl .snum::after { content: '✓'; }
+.card.step-done .step-lbl .snum-n { display: none; }
+.card h2 {
+  font-size: clamp(1rem, 4vw, 1.2rem);
+  font-weight: 700; color: var(--navy); margin-bottom: 18px;
+}
+
+/* ═══════════════════════════════
+   SERVICE OPTIONS
+═══════════════════════════════ */
+.srv-grid { display: flex; flex-direction: column; gap: 10px; }
+.srv {
+  border: 2px solid var(--smoke); border-radius: 11px;
+  padding: 14px 14px;
+  cursor: pointer;
+  background: var(--cream);
+  display: flex; align-items: flex-start; gap: 12px;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 56px;
+  transition: border-color .2s, background .2s, box-shadow .2s, transform .12s;
+}
+/* pill card needs top space */
+.srv:has(.srv-pill) { margin-top: 12px; }
+.srv::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at var(--rx,50%) var(--ry,50%), rgba(201,149,42,.15) 0%, transparent 60%);
+  opacity: 0; transition: opacity .4s;
+  pointer-events: none;
+}
+.srv:hover  { border-color: var(--gold); background: #fffaf0; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,149,42,.12); }
+.srv.active { border-color: var(--gold); background: #fffaf0; box-shadow: 0 0 0 3px rgba(201,149,42,.15); }
+.srv.active::after { opacity: 1; }
+.srv.active { transform: none; }
+.srv input  { display: none; }
+.srv-icon   { font-size: 1.45rem; flex-shrink: 0; margin-top: 2px; }
+.srv-body   { flex: 1; min-width: 0; }
+.srv-title  { font-weight: 700; font-size: .9rem; color: var(--navy); line-height: 1.3; }
+.srv-desc   { font-size: .75rem; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+.srv-pill {
+  position: absolute; top: -8px; right: 10px;
+  background: var(--navy); color: var(--white);
+  font-size: .58rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 2px 9px; border-radius: 99px;
+}
+.srv-chk {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--smoke); flex-shrink: 0; margin-top: 3px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.srv.active .srv-chk { background: var(--gold); border-color: var(--gold); transform: scale(1.1); }
+.srv.active .srv-chk::after { content: '✓'; color: var(--white); font-size: .64rem; font-weight: 700; }
+
+/* ═══════════════════════════════
+   INCLUDES
+═══════════════════════════════ */
+.includes {
+  background: var(--cream); border: 1.5px solid var(--smoke);
+  border-radius: 10px; padding: 14px 15px; margin-top: 18px;
+  transition: all .3s;
+}
+.includes h4 {
+  font-size: .7rem; font-weight: 700; color: var(--navy2);
+  letter-spacing: .04em; text-transform: uppercase; margin-bottom: 10px;
+}
+.includes ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.includes li {
+  font-size: .75rem; color: var(--muted);
+  display: flex; gap: 7px; align-items: flex-start; line-height: 1.4;
+  animation: fadeIn .25s ease both;
+}
+.includes li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+@keyframes fadeIn { from { opacity:0; transform:translateX(-6px); } to { opacity:1; transform:none; } }
+@media (min-width: 500px) {
+  .includes ul { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 14px; }
+}
+
+/* ═══════════════════════════════
+   FIELDS
+═══════════════════════════════ */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label {
+  font-size: .77rem; font-weight: 600;
+  color: var(--navy2); letter-spacing: .02em;
+}
+.field select, .field input[type="number"] {
+  -webkit-appearance: none; appearance: none;
+  border: 1.5px solid var(--smoke); border-radius: 9px;
+  padding: 11px 14px; font-family: inherit;
+  font-size: 16px;
+  background: var(--cream); color: var(--text);
+  outline: none; width: 100%;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+  min-height: 48px;
+}
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b6258' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 13px center;
+  padding-right: 38px;
+}
+.field select:focus, .field input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201,149,42,.13);
+  background: var(--white);
+}
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 440px) { .row2 { grid-template-columns: 1fr; } }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+
+/* ═══════════════════════════════
+   CHIPS
+═══════════════════════════════ */
+.chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.chip {
+  border: 1.5px solid var(--smoke); border-radius: 9px;
+  padding: 10px 15px; font-size: .8rem; font-weight: 500;
+  cursor: pointer;
+  background: var(--cream); user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px; display: flex; align-items: center;
+  transition: border-color .18s, background .18s, transform .12s, box-shadow .18s;
+}
+.chip:hover  { border-color: var(--gold); background: #fffaf0; transform: translateY(-1px); }
+.chip.active {
+  background: var(--navy); color: var(--white); border-color: var(--navy);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(13,27,42,.18);
+}
+
+/* ═══════════════════════════════
+   URGENCY
+═══════════════════════════════ */
+.urg-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+@media (max-width: 400px) { .urg-grid { grid-template-columns: 1fr; } }
+.urg-opt {
+  border: 2px solid var(--smoke); border-radius: 11px;
+  padding: 16px 10px; cursor: pointer; text-align: center;
+  background: var(--cream);
+  -webkit-tap-highlight-color: transparent;
+  min-height: 48px;
+  transition: border-color .18s, background .18s, box-shadow .18s, transform .12s;
+}
+.urg-opt:hover  { border-color: var(--gold); background: #fffaf0; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(201,149,42,.1); }
+.urg-opt.active { border-color: var(--navy); background: var(--navy); color: var(--white); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(13,27,42,.22); }
+.urg-opt input  { display: none; }
+.urg-ico   { font-size: 1.4rem; margin-bottom: 6px; }
+.urg-name  { font-weight: 700; font-size: .85rem; }
+.urg-plus  { font-size: .7rem; font-weight: 700; margin-top: 6px; color: var(--gold); }
+.urg-opt.active .urg-plus { color: var(--gold-lt); }
+
+/* ═══════════════════════════════
+   DIVIDER / HINTS
+═══════════════════════════════ */
+.divider {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--muted); font-size: .68rem;
+  font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+  margin: 18px 0 12px;
+}
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--smoke); }
+#norma-section.hidden { display: none; }
+.hint {
+  font-size: .73rem; color: var(--muted);
+  background: var(--paper); border-radius: 8px;
+  padding: 9px 12px; line-height: 1.5; margin-top: 8px;
+}
+.hint strong { color: var(--navy2); }
+.disclaimer {
+  background: var(--paper); border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0; padding: 10px 13px;
+  font-size: .73rem; color: var(--muted); line-height: 1.5; margin-top: 12px;
+}
+
+/* ═══════════════════════════════
+   RESULTS SIDEBAR
+═══════════════════════════════ */
+.results-panel {
+  background: var(--navy); border-radius: var(--r);
+  padding: 24px 22px 28px; position: sticky; top: 20px;
+  color: var(--white); box-shadow: var(--sh2);
+  opacity: 0; transform: translateY(16px);
+  transition: opacity .5s ease .3s, transform .5s ease .3s;
+}
+.results-panel.visible { opacity: 1; transform: none; }
+
+.results-panel h3 {
+  font-size: 1.05rem; font-weight: 700;
+  margin-bottom: 16px; padding-bottom: 13px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.res-row {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 8px; padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  font-size: .78rem;
+}
+.res-row:last-of-type { border-bottom: none; }
+.res-row .rl { color: rgba(255,255,255,.5); flex-shrink: 0; }
+.res-row .rv { font-weight: 600; text-align: right; }
+
+/* Animated price */
+.price-block {
+  background: rgba(201,149,42,.11);
+  border: 1px solid rgba(201,149,42,.28);
+  border-radius: 11px; padding: 16px; margin-top: 16px; text-align: center;
+  transition: box-shadow .3s;
+}
+.price-block.pulse {
+  animation: priceGlow .5s ease;
+}
+@keyframes priceGlow {
+  0%   { box-shadow: 0 0 0 0 rgba(201,149,42,.5); }
+  50%  { box-shadow: 0 0 0 10px rgba(201,149,42,.0); }
+  100% { box-shadow: 0 0 0 0 rgba(201,149,42,.0); }
+}
+.p-lbl { font-size: .63rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 5px; }
+.p-val {
+  font-size: 2.1rem; font-weight: 800; color: var(--gold-lt); line-height: 1;
+  transition: transform .1s;
+  display: inline-block;
+}
+.p-val.bump { animation: priceBump .2s ease; }
+@keyframes priceBump {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.07); }
+  100% { transform: scale(1); }
+}
+
+.del-block {
+  background: rgba(45,122,79,.13); border: 1px solid rgba(45,122,79,.28);
+  border-radius: 11px; padding: 13px 15px; margin-top: 11px;
+  display: flex; align-items: center; gap: 11px;
+  transition: all .3s;
+}
+.del-ico { font-size: 1.35rem; }
+.del-dt  { font-size: .63rem; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); }
+.del-dv  { font-weight: 700; font-size: .95rem; color: #7de8a8; transition: all .3s; }
+.del-dd  { font-size: .68rem; color: rgba(255,255,255,.37); margin-top: 1px; }
+
+.cta-btn {
+  display: block; width: 100%;
+  background: var(--gold); color: var(--navy);
+  font-family: inherit; font-size: .9rem; font-weight: 700;
+  border: none; border-radius: 10px; padding: 14px 18px;
+  cursor: pointer; margin-top: 15px;
+  transition: background .15s, transform .12s, box-shadow .15s;
+  text-align: center; text-decoration: none;
+  letter-spacing: .02em;
+  -webkit-tap-highlight-color: transparent;
+}
+#spacing-hint:empty { display: none; }
+.cta-note {
+  font-size: .60rem;
+  color: white;
+  text-align: center;
+  margin-top: 9px;
+  line-height: 1.5;
+}
+
+.cta-btn:hover  { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(201,149,42,.3); }
+.cta-btn:active { transform: none; box-shadow: none; }
+.reset-btn {
+  display: block; width: 100%;
+  background: transparent;
+  color: rgba(255,255,255,.35);
+  font-family: inherit; font-size: .78rem; font-weight: 500;
+  border: 1px solid rgba(255,255,255,.12); border-radius: 9px;
+  padding: 9px 18px; cursor: pointer; margin-top: 8px;
+  transition: color .15s, border-color .15s;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.reset-btn:hover { color: rgba(255,255,255,.7); border-color: rgba(255,255,255,.3); }
+  font-size: .65rem; color: rgba(255,255,255,.3);
+  text-align: center; margin-top: 9px; line-height: 1.5;
+}
+
+/* ═══════════════════════════════
+   MOBILE STICKY BAR
+═══════════════════════════════ */
+.mob-bar {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: var(--navy);
+  border-top: 1px solid rgba(255,255,255,.08);
+  padding: 10px 16px 12px;
+  box-shadow: 0 -6px 28px rgba(0,0,0,.28);
+}
+.mob-inner {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 12px;
+  max-width: 600px; margin: 0 auto;
+}
+.mob-price-col { flex: 1; min-width: 0; }
+.mob-p-lbl { font-size: .6rem; letter-spacing: .09em; text-transform: uppercase; color: rgba(255,255,255,.4); }
+.mob-p-val {
+  font-size: 1.6rem; font-weight: 800; color: var(--gold-lt); line-height: 1.1;
+}
+.mob-p-val.bump { animation: priceBump .2s ease; }
+.mob-days { font-size: .7rem; color: rgba(255,255,255,.42); margin-top: 1px; }
+.mob-cta {
+  background: var(--gold); color: var(--navy);
+  font-family: inherit; font-size: .84rem; font-weight: 700;
+  border: none; border-radius: 10px; padding: 12px 18px;
+  cursor: pointer; white-space: nowrap;
+  text-decoration: none; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s, transform .1s;
+}
+.mob-cta:hover { background: var(--gold-lt); }
+.mob-cta:active { transform: scale(.97); }
+@media (max-width: 820px) { .mob-bar { display: block; } }
+@media (min-width: 821px) { .mob-bar { display: none !important; } }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-orb header-orb-1"></div>
+  <div class="header-orb header-orb-2"></div>
+  <div class="header-orb header-orb-3"></div>
+  <div class="badge">✦ Cotizador Académico</div>
+  <h1>¿Cuánto cuesta<br><span>corregir tu tesis?</span></h1>
+  <p>Calcula al instante el precio y tiempo de entrega para normas APA, ICONTEC, corrección de estilo y más.</p>
+</header>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-bar" id="progress-bar">
+    <div class="prog-step active" data-step="1">
+      <div class="prog-num" id="pn1">1</div>
+      <div class="prog-lbl">Servicio</div>
+    </div>
+    <div class="prog-step" data-step="2">
+      <div class="prog-num" id="pn2">2</div>
+      <div class="prog-lbl">Documento</div>
+    </div>
+    <div class="prog-step" data-step="3">
+      <div class="prog-num" id="pn3">3</div>
+      <div class="prog-lbl">Páginas</div>
+    </div>
+    <div class="prog-step" data-step="4">
+      <div class="prog-num" id="pn4">4</div>
+      <div class="prog-lbl">Entrega</div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTHOR BANNER -->
+<div class="author-banner">
+  <div class="author-inner">
+    <div class="author-avatar">AE</div>
+    <div class="author-info">
+      <div class="author-name">Ing. Andrés Escobar</div>
+      <div class="author-cred">Consultor académico y metodológico con más de 5 años de experiencia</div>
+    </div>
+    <div class="author-stats">
+      <div class="stat"><span class="stat-n">+200</span><span class="stat-l">documentos</span></div>
+      <div class="stat"><span class="stat-n">APA · ICONTEC</span><span class="stat-l">y más normas</span></div>
+      <div class="stat"><span class="stat-n">TURNITIN</span><span class="stat-l">revisión de plagio</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+<div class="layout">
+
+  <!-- FORM -->
+  <div>
+
+    <!-- PASO 1 -->
+    <div class="card" data-step="1">
+      <div class="step-lbl">
+        <div class="snum"><span class="snum-n">1</span></div>
+        Tipo de servicio
+      </div>
+      <h2>¿Qué necesitas corregir?</h2>
+      <div class="srv-grid" id="service-grid">
+
+        <label class="srv" data-service="normas">
+          <input type="radio" name="service" value="normas">
+          <div class="srv-icon">📐</div>
+          <div class="srv-body">
+            <div class="srv-title">Solo Normas de Escritura</div>
+            <div class="srv-desc">APA, ICONTEC, Chicago, Harvard, Vancouver, IEEE y formatos propios.</div>
+          </div>
+          <div class="srv-chk"></div>
+        </label>
+
+        <label class="srv" data-service="estilo">
+          <input type="radio" name="service" value="estilo">
+          <div class="srv-icon">✍️</div>
+          <div class="srv-body">
+            <div class="srv-title">Solo Corrección de Estilo</div>
+            <div class="srv-desc">Ortografía, gramática, cohesión, conectores y puntuación.</div>
+          </div>
+          <div class="srv-chk"></div>
+        </label>
+
+        <label class="srv active" data-service="ambos">
+          <div class="srv-pill">Servicio Integral</div>
+          <input type="radio" name="service" value="ambos" checked>
+          <div class="srv-icon">🎯</div>
+          <div class="srv-body">
+            <div class="srv-title">Estilo + Normas de Escritura</div>
+            <div class="srv-desc">La opción más solicitada para tesis y trabajos de grado.</div>
+          </div>
+          <div class="srv-chk"></div>
+        </label>
+
+      </div>
+      <div class="includes">
+        <h4>✦ Este servicio incluye</h4>
+        <ul id="includes-list"></ul>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div class="card" data-step="2">
+      <div class="step-lbl">
+        <div class="snum"><span class="snum-n">2</span></div>
+        Sobre tu documento
+      </div>
+      <h2>Cuéntanos un poco más</h2>
+      <div class="stack">
+        <div class="row2">
+          <div class="field">
+            <label>Tipo de documento</label>
+            <select id="doc-type">
+              <option value="" disabled selected>— Seleccionar —</option>
+              <option value="tesis">Tesis / Trabajo de grado</option>
+              <option value="articulo">Artículo científico</option>
+              <option value="ensayo">Ensayo académico</option>
+              <option value="informe">Informe / Reporte</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Nivel académico</label>
+            <select id="nivel">
+              <option value="" disabled selected>— Seleccionar —</option>
+              <option value="pregrado">Pregrado</option>
+              <option value="especializacion">Especialización</option>
+              <option value="maestria">Maestría</option>
+              <option value="doctorado">Doctorado</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Área de conocimiento</label>
+          <select id="area">
+            <option value="" disabled selected>— Seleccionar —</option>
+            <option value="sociales">Ciencias Administrativas y Económicas</option>
+            <option value="ingenieria">Ciencias de la Educación</option>
+            <option value="salud">Ciencias Sociales, Artes y Humanidades</option>
+            <option value="exactas">Ciencias Jurídicas y Políticas</option>
+            <option value="economia">Ciencias Agrícolas y Medio Ambiente</option>
+            <option value="derecho">Ciencias de la Salud</option>
+            <option value="educacion">Ciencias Básicas e Ingeniería</option>
+          </select>
+        </div>
+        <div id="area-hint" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div class="card" data-step="3">
+      <div class="step-lbl">
+        <div class="snum"><span class="snum-n">3</span></div>
+        Extensión del documento
+      </div>
+      <h2>¿Cuántas páginas tiene?</h2>
+
+      <div class="field">
+        <label>Número de páginas</label>
+        <input type="number" id="pages-input" min="1" max="999" placeholder="Ej: 120" inputmode="numeric">
+      </div>
+
+      <div class="divider">Interlineado del documento</div>
+      <div class="chip-row" id="spacing-group">
+        <div class="chip"        data-spacing="1.0">Sencillo (1.0)</div>
+        <div class="chip active" data-spacing="1.15">Predeterminado (1.15)</div>
+        <div class="chip"        data-spacing="1.5">Intermedio (1.5)</div>
+        <div class="chip"        data-spacing="2.0">Doble (2.0)</div>
+      </div>
+      <div class="hint" id="spacing-hint"></div>
+
+      <div id="norma-section">
+        <div class="divider">Norma a aplicar</div>
+        <div class="field">
+          <label>Selecciona la norma</label>
+          <select id="norma-select">
+            <option value="" disabled selected>— Seleccionar —</option>
+            <option value="apa7">APA 7.ª edición</option>
+            <option value="icontec">ICONTEC</option>
+            <option value="chicago">Estilo Chicago</option>
+            <option value="harvard">Estilo Harvard</option>
+            <option value="vancouver">Vancouver</option>
+            <option value="ieee">IEEE</option>
+            <option value="propio">Formato propio de la universidad</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 4 -->
+    <div class="card" data-step="4">
+      <div class="step-lbl">
+        <div class="snum"><span class="snum-n">4</span></div>
+        Tiempo de entrega
+      </div>
+      <h2>¿Con qué urgencia lo necesitas?</h2>
+      <div class="urg-grid" id="urgency-grid">
+        <label class="urg-opt active" data-urgency="normal">
+          <input type="radio" name="urgency" value="normal" checked>
+          <div class="urg-ico">🗓️</div>
+          <div class="urg-name">Normal</div>
+          <div class="urg-plus">Tarifa base</div>
+        </label>
+        <label class="urg-opt" data-urgency="express">
+          <input type="radio" name="urgency" value="express">
+          <div class="urg-ico">⚡</div>
+          <div class="urg-name">Express</div>
+          <div class="urg-plus">Recargo del 25%</div>
+        </label>
+        <label class="urg-opt" data-urgency="urgente">
+          <input type="radio" name="urgency" value="urgente">
+          <div class="urg-ico">🚀</div>
+          <div class="urg-name">Urgente</div>
+          <div class="urg-plus">Recargo del 50%</div>
+        </label>
+      </div>
+      <div class="disclaimer">
+        Los tiempos son estimados y pueden variar según la complejidad del documento y la disponibilidad del corrector. El precio final se confirma al enviar el documento.
+      </div>
+    </div>
+
+  </div><!-- /form -->
+
+  <!-- SIDEBAR -->
+  <div class="results-panel" id="results-panel">
+    <h3>📋 Tu cotización</h3>
+    <div class="res-row"><span class="rl">Servicio</span>     <span class="rv" id="r-service">—</span></div>
+    <div class="res-row"><span class="rl">Nivel</span>        <span class="rv" id="r-nivel">—</span></div>
+    <div class="res-row"><span class="rl">Área</span>         <span class="rv" id="r-area">—</span></div>
+    <div class="res-row"><span class="rl">Documento</span>    <span class="rv" id="r-doc">—</span></div>
+    <div class="res-row"><span class="rl">Páginas</span>      <span class="rv" id="r-pages">—</span></div>
+    <div class="res-row"><span class="rl">Interlineado</span> <span class="rv" id="r-spacing">—</span></div>
+    <div class="res-row" id="r-norma-row">
+      <span class="rl">Norma</span><span class="rv" id="r-norma">—</span>
+    </div>
+    <div class="res-row"><span class="rl">Urgencia</span>     <span class="rv" id="r-urgency">—</span></div>
+
+    <div class="price-block" id="price-block">
+      <div class="p-lbl">Estimación total</div>
+      <div class="p-val" id="r-price">$0</div>
+    </div>
+
+    <div class="del-block">
+      <div class="del-ico">🕐</div>
+      <div>
+        <div class="del-dt">Entrega estimada</div>
+        <div class="del-dv" id="r-days">—</div>
+        <div class="del-dd" id="r-date">—</div>
+      </div>
+    </div>
+
+    <a href="#" class="cta-btn" id="wa-btn" target="_blank">💬 Solicitar por WhatsApp</a>
+    <button class="reset-btn" id="reset-btn">↺ Restablecer cotización</button>
+    <div class="cta-note">Estimado orientativo. El precio final se confirma al enviar el documento.</div>
+  </div>
+
+</div>
+</div>
+
+<!-- MOBILE BAR -->
+<div class="mob-bar">
+  <div class="mob-inner">
+    <div class="mob-price-col">
+      <div class="mob-p-lbl">Estimación total</div>
+      <div class="mob-p-val" id="mob-price">$0</div>
+      <div class="mob-days" id="mob-days">—</div>
+    </div>
+    <a href="#" class="mob-cta" id="mob-wa-btn" target="_blank">💬 WhatsApp</a>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════
+//  DATA
+// ════════════════════════════════
+const BASE_PRICES = {
+  normas: { 1.0:5100, 1.15:4500, 1.5:4200, 2.0:3000 },
+  estilo: { 1.0:7650, 1.15:6750, 1.5:6000, 2.0:4500 },
+  ambos:  { 1.0:10200,1.15:9000, 1.5:8400, 2.0:6000 },
+};
+const NIVEL_MULT = { pregrado:1.0, especializacion:1.30, maestria:1.65, doctorado:2.15 };
+const AREA_MULT  = { sociales:1.05, ingenieria:1.0, salud:1.0, exactas:1.10, economia:1.05, derecho:1.15, educacion:1.15 };
+const URG_MULT   = { normal:1.0, express:1.25, urgente:1.5 };
+
+const INCLUDES = {
+  normas:['Construcción correcta de citas y referencias','Revisión de plagio incluida','Elaboración de índices y listas especiales','Estandarización del formato según la norma','Corrección de márgenes, tipo de letra e interlineado','Corrección de títulos, numeración y saltos de página','Automatización de figuras, tablas y anexos','Portada y contraportada según la norma'],
+  estilo:['Corrección ortográfica (tildes, mayúsculas, etc.)','Estandarización del estilo (viñetas, cifras, cursivas)','Conectores y transiciones entre párrafos','Mejora de la cohesión y coherencia textual','Corrección léxica y eliminación de repeticiones','Eliminación de cacofonías y coloquialismos','Corrección de puntuación completa','Replanteamiento de oraciones cuando sea necesario'],
+};
+INCLUDES.ambos = [...new Set([...INCLUDES.normas,...INCLUDES.estilo])];
+
+const SRV_LBL  = { normas:'Solo Normas de Escritura', estilo:'Solo Corrección de Estilo', ambos:'Estilo + Normas' };
+const NIV_LBL  = { pregrado:'Pregrado', especializacion:'Especialización', maestria:'Maestría', doctorado:'Doctorado' };
+const DOC_LBL  = { tesis:'Tesis / Trabajo de grado', articulo:'Artículo científico', ensayo:'Ensayo académico', informe:'Informe / Reporte', otro:'Otro' };
+const AREA_LBL = { sociales:'Cs. Administrativas y Económicas', ingenieria:'Cs. de la Educación', salud:'Cs. Sociales, Artes y Humanidades', exactas:'Cs. Jurídicas y Políticas', economia:'Cs. Agrícolas y Medio Ambiente', derecho:'Cs. de la Salud', educacion:'Cs. Básicas e Ingeniería' };
+const NRM_LBL  = { apa7:'APA 7.ª ed.', icontec:'ICONTEC', chicago:'Chicago', harvard:'Harvard', vancouver:'Vancouver', ieee:'IEEE', propio:'Formato propio' };
+const URG_LBL  = { normal:'Normal', express:'Express (+25%)', urgente:'Urgente (+50%)' };
+
+// ════════════════════════════════
+//  STATE  (null = sin seleccionar)
+// ════════════════════════════════
+const INIT = { service:'ambos', nivel:null, doc:null, area:null, pages:null, spacing:1.15, norma:null, urgency:'normal' };
+const S = {...INIT};
+const done = { 1:true, 2:false, 3:false, 4:false };
+
+// ════════════════════════════════
+//  HELPERS
+// ════════════════════════════════
+const round5k = n => Math.round(n/5000)*5000;
+const cop = n => '$' + round5k(n).toLocaleString('es-CO');
+
+function isReady(){
+  // precio requiere: nivel, area, pages > 0
+  // si servicio incluye normas: también norma
+  if(!S.nivel || !S.area || !S.pages) return false;
+  if(S.service !== 'estilo' && !S.norma) return false;
+  return true;
+}
+
+function calcDays(pages, urgency){
+  let base;
+  if      (pages<=30)  base=3;
+  else if (pages<=60)  base=5;
+  else if (pages<=150) base=7;
+  else if (pages<=250) base=9;
+  else if (pages<=350) base=11;
+  else if (pages<=500) base=14;
+  else                 base=18;
+  const adj = urgency==='express'?-1:urgency==='urgente'?-2:0;
+  return Math.max(1, base+adj);
+}
+
+function calDate(days){
+  const d=new Date(); d.setDate(d.getDate()+days);
+  return d.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
+}
+
+function setText(id,v){ const el=document.getElementById(id); if(el) el.textContent=v; }
+
+// Animated number counter
+let priceAnim=null, lastPrice=0;
+function animatePrice(target){
+  const tgt = round5k(target);
+  if(tgt===lastPrice) return;
+  if(priceAnim) cancelAnimationFrame(priceAnim);
+  const start=lastPrice, diff=tgt-start, dur=320, t0=performance.now();
+  function step(now){
+    const p=Math.min((now-t0)/dur,1);
+    const ease=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+    const val=Math.round((start+diff*ease)/5000)*5000;
+    const str='$'+val.toLocaleString('es-CO');
+    setText('r-price', str);
+    setText('mob-price', str);
+    if(p<1){ priceAnim=requestAnimationFrame(step); }
+    else {
+      lastPrice=tgt;
+      document.getElementById('r-price')?.classList.add('bump');
+      document.getElementById('mob-price')?.classList.add('bump');
+      setTimeout(()=>{
+        document.getElementById('r-price')?.classList.remove('bump');
+        document.getElementById('mob-price')?.classList.remove('bump');
+      },220);
+      const pb=document.getElementById('price-block');
+      if(pb){ pb.classList.add('pulse'); setTimeout(()=>pb.classList.remove('pulse'),500); }
+    }
+  }
+  priceAnim=requestAnimationFrame(step);
+}
+
+// Progress bar
+function updateProgress(){
+  document.querySelectorAll('.prog-step').forEach(el=>{
+    const n=parseInt(el.dataset.step);
+    el.classList.remove('done','active');
+    if(done[n] && n<4) el.classList.add('done');
+    else {
+      const allPrev = [1,2,3,4].filter(k=>k<n).every(k=>done[k]);
+      if(allPrev) el.classList.add('active');
+    }
+  });
+}
+
+function markDone(step){
+  done[step]=true;
+  const card=document.querySelector(`.card[data-step="${step}"]`);
+  if(card) card.classList.add('step-done');
+  updateProgress();
+}
+
+// ════════════════════════════════
+//  RENDER
+// ════════════════════════════════
+function render(){
+  const ready = isReady();
+  const total = ready
+    ? BASE_PRICES[S.service][S.spacing] * NIVEL_MULT[S.nivel] * AREA_MULT[S.area] * URG_MULT[S.urgency] * S.pages
+    : 0;
+
+  setText('r-service', SRV_LBL[S.service]);
+  setText('r-nivel',   S.nivel  ? NIV_LBL[S.nivel]   : '—');
+  setText('r-area',    S.area   ? AREA_LBL[S.area]    : '—');
+  setText('r-doc',     S.doc    ? DOC_LBL[S.doc]      : '—');
+  setText('r-pages',   S.pages  ? S.pages+' páginas'  : '—');
+  setText('r-spacing', S.spacing===1.0?'Sencillo (1.0)':S.spacing===1.15?'Predeterminado (1.15)':S.spacing===1.5?'Intermedio (1.5)':'Doble (2.0)');
+  setText('r-urgency', URG_LBL[S.urgency]);
+
+  const normaRow=document.getElementById('r-norma-row');
+  if(S.service==='estilo'){ normaRow.style.display='none'; }
+  else { normaRow.style.display=''; setText('r-norma', S.norma ? NRM_LBL[S.norma] : '—'); }
+
+  if(ready){
+    const days = calcDays(S.pages, S.urgency);
+    const dStr = days===1?'1 día calendario':days+' días calendario';
+    setText('r-days', dStr);
+    setText('r-date', 'Aprox. '+calDate(days));
+    setText('mob-days', dStr);
+
+    const spacingLabel = S.spacing===1.0?'Sencillo (1.0)':S.spacing===1.15?'Predeterminado (1.15)':S.spacing===1.5?'Intermedio (1.5)':'Doble (2.0)';
+    const normaLine = S.service!=='estilo'?`📐 Norma aplicada: *${NRM_LBL[S.norma]}*`:null;
+    const msg=[
+      `👋 Hola Andrés, quiero cotizar una corrección académica.`,
+      `%0A📋 *DETALLES DEL DOCUMENTO*`,
+      `▸ Servicio: *${SRV_LBL[S.service]}*`,
+      `▸ Nivel: *${NIV_LBL[S.nivel]}*`,
+      `▸ Área: *${AREA_LBL[S.area]}*`,
+      S.doc ? `▸ Tipo: *${DOC_LBL[S.doc]}*` : null,
+      `▸ Páginas: *${S.pages}* · Interlineado: *${spacingLabel}*`,
+      normaLine,
+      `▸ Urgencia: *${URG_LBL[S.urgency]}*`,
+      `%0A💰 *Estimación:* ${cop(total)}`,
+      `🗓 *Tiempo estimado:* ${dStr}`,
+      `%0AQuedo atento/a. ¡Gracias!`,
+    ].filter(Boolean).join('%0A');
+    const waLink=`https://wa.me/573215840927?text=${msg}`;
+    document.getElementById('wa-btn').href=waLink;
+    document.getElementById('mob-wa-btn').href=waLink;
+  } else {
+    setText('r-days', '—');
+    setText('r-date', '');
+    setText('mob-days', 'Completa los campos');
+  }
+
+  animatePrice(total);
+
+  document.getElementById('includes-list').innerHTML =
+    INCLUDES[S.service].map((i,idx)=>`<li style="animation-delay:${idx*30}ms">${i}</li>`).join('');
+  document.getElementById('norma-section').classList.toggle('hidden', S.service==='estilo');
+
+  if(S.pages){
+    const wpp=S.spacing===1.0?380:S.spacing===1.15?340:S.spacing===1.5?280:200;
+    document.getElementById('spacing-hint').innerHTML=
+      `Con interlineado <strong>${S.spacing}</strong>, tu documento tiene aprox. <strong>${(S.pages*wpp).toLocaleString('es-CO')} palabras</strong>.`;
+  } else {
+    document.getElementById('spacing-hint').innerHTML='';
+  }
+}
+
+// ════════════════════════════════
+//  EVENTS
+// ════════════════════════════════
+document.getElementById('service-grid').addEventListener('click',e=>{
+  const o=e.target.closest('.srv'); if(!o) return;
+  const rect=o.getBoundingClientRect();
+  o.style.setProperty('--rx',((e.clientX-rect.left)/rect.width*100)+'%');
+  o.style.setProperty('--ry',((e.clientY-rect.top)/rect.height*100)+'%');
+  document.querySelectorAll('.srv').forEach(x=>x.classList.remove('active'));
+  o.classList.add('active'); S.service=o.dataset.service;
+  markDone(1); render();
+});
+
+document.getElementById('nivel').addEventListener('change',e=>{
+  S.nivel = e.target.value || null;
+  if(S.nivel) markDone(2);
+  render();
+});
+document.getElementById('doc-type').addEventListener('change',e=>{
+  S.doc = e.target.value || null;
+  render();
+});
+document.getElementById('area').addEventListener('change',e=>{
+  S.area = e.target.value || null;
+  if(S.nivel && S.area) markDone(2);
+  render();
+});
+document.getElementById('norma-select').addEventListener('change',e=>{
+  S.norma = e.target.value || null;
+  render();
+});
+
+// Pages — no forzar valor mientras escribe
+document.getElementById('pages-input').addEventListener('input', e=>{
+  const v = parseInt(e.target.value);
+  S.pages = (v > 0) ? Math.min(v, 999) : null;
+  if(S.pages) markDone(3);
+  render();
+});
+document.getElementById('pages-input').addEventListener('blur', e=>{
+  // solo al perder foco: si hay algo inválido, limpiar
+  if(e.target.value !== '' && (!parseInt(e.target.value) || parseInt(e.target.value) < 1)){
+    e.target.value = '';
+    S.pages = null;
+    render();
+  }
+});
+
+document.getElementById('spacing-group').addEventListener('click',e=>{
+  const c=e.target.closest('.chip'); if(!c) return;
+  document.querySelectorAll('#spacing-group .chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active'); S.spacing=parseFloat(c.dataset.spacing);
+  render();
+});
+
+document.getElementById('urgency-grid').addEventListener('click',e=>{
+  const o=e.target.closest('.urg-opt'); if(!o) return;
+  document.querySelectorAll('.urg-opt').forEach(x=>x.classList.remove('active'));
+  o.classList.add('active'); S.urgency=o.dataset.urgency;
+  markDone(4); render();
+});
+
+// Reset
+document.getElementById('reset-btn').addEventListener('click',()=>{
+  Object.assign(S, {...INIT});
+  done[1]=true; done[2]=false; done[3]=false; done[4]=false;
+
+  // HTML reset
+  document.querySelectorAll('.srv').forEach(x=>x.classList.remove('active'));
+  document.querySelector('.srv[data-service="ambos"]').classList.add('active');
+  document.getElementById('doc-type').value    = '';
+  document.getElementById('nivel').value       = '';
+  document.getElementById('area').value        = '';
+  document.getElementById('pages-input').value = '';
+  document.getElementById('norma-select').value= '';
+  document.getElementById('urgency-grid').querySelectorAll('.urg-opt').forEach(x=>x.classList.remove('active'));
+  document.querySelector('.urg-opt[data-urgency="normal"]').classList.add('active');
+  document.querySelectorAll('#spacing-group .chip').forEach(x=>x.classList.remove('active'));
+  document.querySelector('.chip[data-spacing="1.15"]').classList.add('active');
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('step-done'));
+  lastPrice = 0;
+  updateProgress();
+  render();
+});
+
+// ════════════════════════════════
+//  SCROLL REVEAL (IntersectionObserver)
+// ════════════════════════════════
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+document.querySelectorAll('.card').forEach((c,i)=>{
+  c.style.transitionDelay = (i*60)+'ms';
+  // Si ya es visible en el viewport al cargar, mostrar de inmediato
+  const rect = c.getBoundingClientRect();
+  if(rect.top < window.innerHeight) {
+    c.classList.add('visible');
+  } else {
+    io.observe(c);
+  }
+});
+
+// Sidebar reveal
+const rp=document.getElementById('results-panel');
+if(rp){
+  const rpObs=new IntersectionObserver(([e])=>{
+    if(e.isIntersecting){ rp.classList.add('visible'); rpObs.disconnect(); }
+  },{threshold:0.1});
+  rpObs.observe(rp);
+}
+
+// ════════════════════════════════
+//  HEADER COLLAPSE ON SCROLL
+// ════════════════════════════════
+const hdr = document.querySelector('header');
+window.addEventListener('scroll', ()=>{
+  hdr.classList.toggle('collapsed', window.scrollY > 60);
+}, { passive: true });
+
+// ════════════════════════════════
+render();
+</script>
+</body>
+</html>
