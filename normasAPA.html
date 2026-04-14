@@ -1038,8 +1038,9 @@ function render(){
 
   animatePrice(total);
 
-  document.getElementById('includes-list').innerHTML =
-    INCLUDES[S.service].map((i,idx)=>`<li style="animation-delay:${idx*30}ms">${i}</li>`).join('');
+  const newHTML = INCLUDES[S.service].map(i=>`<li>${i}</li>`).join('');
+  const list = document.getElementById('includes-list');
+  if(list.innerHTML !== newHTML) list.innerHTML = newHTML;
   document.getElementById('norma-section').classList.toggle('hidden', S.service==='estilo');
 
   if(S.pages){
