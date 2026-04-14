@@ -1002,7 +1002,8 @@ function render(){
   const normaRow=document.getElementById('r-norma-row');
   if(S.service==='estilo'){ normaRow.style.display='none'; }
   else { normaRow.style.display=''; setText('r-norma', S.norma ? NRM_LBL[S.norma] : '—'); }
-
+  
+  document.getElementById('wa-btn').classList.toggle('disabled', !ready);
   if(ready){
     const days = calcDays(S.pages, S.urgency);
     const dStr = days===1?'1 día calendario':days+' días calendario';
@@ -1026,12 +1027,10 @@ function render(){
       `🗓 *Tiempo estimado:* ${dStr}`,
       `%0AQuedo atento/a. ¡Gracias!`,
     ].filter(Boolean).join('%0A');
-    document.getElementById('wa-btn').classList.toggle('disabled', !ready);
     const waLink=`https://wa.me/573215840927?text=${msg}`;
     document.getElementById('wa-btn').href=waLink;
     document.getElementById('mob-wa-btn').href=waLink;
   } else {
-    document.getElementById('wa-btn').href = 'javascript:void(0)';
     setText('r-days', '—');
     setText('r-date', '');
     setText('mob-days', 'Completa los campos');
