@@ -1174,7 +1174,8 @@ if(rp){
 // ════════════════════════════════
 const hdr = document.querySelector('header');
 window.addEventListener('scroll', ()=>{
-  hdr.classList.toggle('collapsed', window.scrollY > 60);
+  if(window.scrollY > 100) hdr.classList.add('collapsed');
+  else if(window.scrollY < 20) hdr.classList.remove('collapsed');
 }, { passive: true });
 
 // ════════════════════════════════
