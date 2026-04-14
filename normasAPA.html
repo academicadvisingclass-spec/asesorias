@@ -84,6 +84,11 @@ header.collapsed {
   33%       { transform: translate(20px, -15px) scale(1.05); }
   66%       { transform: translate(-10px, 10px) scale(.96); }
 }
+.cta-btn.disabled {
+  opacity: .4;
+  pointer-events: none;
+  cursor: not-allowed;
+}
 .badge {
   display: inline-flex; align-items: center; gap: 6px;
   background: rgba(201,149,42,.18);
@@ -1021,6 +1026,7 @@ function render(){
       `🗓 *Tiempo estimado:* ${dStr}`,
       `%0AQuedo atento/a. ¡Gracias!`,
     ].filter(Boolean).join('%0A');
+    document.getElementById('wa-btn').classList.toggle('disabled', !ready);
     const waLink=`https://wa.me/573215840927?text=${msg}`;
     document.getElementById('wa-btn').href=waLink;
     document.getElementById('mob-wa-btn').href=waLink;
