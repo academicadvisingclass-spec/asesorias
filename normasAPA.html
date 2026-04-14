@@ -1031,6 +1031,7 @@ function render(){
     document.getElementById('wa-btn').href=waLink;
     document.getElementById('mob-wa-btn').href=waLink;
   } else {
+    document.getElementById('wa-btn').href = 'javascript:void(0)';
     setText('r-days', '—');
     setText('r-date', '');
     setText('mob-days', 'Completa los campos');
