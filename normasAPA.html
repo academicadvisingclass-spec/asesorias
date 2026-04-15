@@ -1127,7 +1127,7 @@ document.getElementById('reset-btn').addEventListener('click',()=>{
   document.querySelectorAll('#spacing-group .chip').forEach(x=>x.classList.remove('active'));
   document.querySelector('.chip[data-spacing="1.15"]').classList.add('active');
   document.querySelectorAll('.card').forEach(c=>c.classList.remove('step-done'));
-  lastPrice = 0;
+  lastPrice = -1;
   updateProgress();
   render();
 });
