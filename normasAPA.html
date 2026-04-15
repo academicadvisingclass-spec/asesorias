@@ -806,6 +806,7 @@ header p {
       </div>
       <div class="disclaimer">
         Los tiempos son estimados y pueden variar según la complejidad del documento y la disponibilidad del corrector. El precio final se confirma al enviar el documento.
+        <strong>Recuerda que este servicio NO INCLUYE redacción de NUEVO CONTENIDO.</strong>
       </div>
     </div>
 
@@ -916,7 +917,7 @@ function calcDays(pages, urgency){
   else if (pages<=500) base=21;
   else if (pages<=600) base=27;
   else if (pages<=750) base=33;
-  else if (pages<=900) base=40:
+  else if (pages<=900) base=40;
   else                 base=45;
   if (urgency === 'express')  return Math.max(1, Math.ceil(base * 0.70));
   if (urgency === 'urgente')  return Math.max(1, Math.ceil(base * 0.50));
