@@ -982,9 +982,30 @@ function markDone(step){
 // ════════════════════════════════
 function render(){
   const ready = isReady();
-  const total = ready
-    ? BASE_PRICES[S.service][S.spacing] * NIVEL_MULT[S.nivel] * AREA_MULT[S.area] * URG_MULT[S.urgency] * S.pages
-    : 0;
+  function calcTotal(pages, basePrice, nivelMult, areaMult, urgMult) {
+      const ppp = basePrice * nivelMult * areaMult * urgMult;
+      const tramos = [
+        { hasta: 50,  factor: 1.00 },
+        { hasta: 100, factor: 0.85 },
+        { hasta: 200, factor: 0.75 },
+        { hasta: 400, factor: 0.65 },
+        { hasta: 1000,factor: 0.55 },
+      ];
+      let total = 0, restantes = pages;
+      let anterior = 0;
+      for (const t of tramos) {
+        if (restantes <= 0) break;
+        const enEsteTramo = Math.min(restantes, t.hasta - anterior);
+        total += enEsteTramo * ppp * t.factor;
+        restantes -= enEsteTramo;
+        anterior = t.hasta;
+      }
+      return total;
+    }
+    
+    const total = ready
+      ? calcTotal(S.pages, BASE_PRICES[S.service][S.spacing], NIVEL_MULT[S.nivel], AREA_MULT[S.area], URG_MULT[S.urgency])
+      : 0;
 
   setText('r-service', SRV_LBL[S.service]);
   setText('r-nivel',   S.nivel  ? NIV_LBL[S.nivel]   : '—');
