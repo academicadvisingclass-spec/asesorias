@@ -915,8 +915,9 @@ function calcDays(pages, urgency){
   else if (pages<=350) base=11;
   else if (pages<=500) base=14;
   else                 base=18;
-  const adj = urgency==='express'?-1:urgency==='urgente'?-2:0;
-  return Math.max(1, base+adj);
+  if (urgency === 'express')  return Math.max(1, Math.ceil(base * 0.70));
+  if (urgency === 'urgente')  return Math.max(1, Math.ceil(base * 0.50));
+  return base;
 }
 
 function calDate(days){
