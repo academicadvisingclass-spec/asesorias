@@ -1091,13 +1091,16 @@ document.getElementById('pages-input').addEventListener('input', e=>{
   if(S.pages) markDone(3);
   render();
 });
-document.getElementById('pages-input').addEventListener('blur', e=>{
-  // solo al perder foco: si hay algo inválido, limpiar
-  if(e.target.value !== '' && (!parseInt(e.target.value) || parseInt(e.target.value) < 1)){
-    e.target.value = '';
-    S.pages = null;
-    render();
+document.getElementById('pages-input').addEventListener('input', e=>{
+  const v = parseInt(e.target.value);
+  if(v > 1000) {
+    e.target.value = 1000;
+    S.pages = 1000;
+  } else {
+    S.pages = (v > 0) ? v : null;
   }
+  if(S.pages) markDone(3);
+  render();
 });
 
 document.getElementById('spacing-group').addEventListener('click',e=>{
