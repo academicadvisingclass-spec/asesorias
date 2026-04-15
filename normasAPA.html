@@ -724,13 +724,13 @@ header p {
           <label>Área de conocimiento</label>
           <select id="area">
             <option value="" disabled selected>— Seleccionar —</option>
-            <option value="sociales">Ciencias Administrativas, Económicas y Contables</option>
-            <option value="ingenieria">Ciencias de la Educación</option>
-            <option value="salud">Ciencias Sociales, Artes y Humanidades</option>
-            <option value="exactas">Ciencias Jurídicas y Políticas</option>
-            <option value="economia">Ciencias Agrícolas y Medio Ambiente</option>
-            <option value="derecho">Ciencias de la Salud</option>
-            <option value="educacion">Ciencias Exactas e Ingeniería</option>
+            <option value="admin">Ciencias Administrativas, Económicas y Contables</option>
+            <option value="educacion">Ciencias de la Educación</option>
+            <option value="sociales">Ciencias Sociales, Artes y Humanidades</option>
+            <option value="derecho">Ciencias Jurídicas y Políticas</option>
+            <option value="agro">Ciencias Agrícolas y Medio Ambiente</option>
+            <option value="salud">Ciencias de la Salud</option>
+            <option value="ingenieria">Ciencias Exactas e Ingeniería</option>
           </select>
         </div>
         <div id="area-hint" style="display:none;"></div>
@@ -864,9 +864,9 @@ header p {
 //  DATA
 // ════════════════════════════════
 const BASE_PRICES = {
-  normas: { 1.0:6500, 1.15:6000, 1.5:5500, 2.0:5000 },
-  estilo: { 1.0:14000, 1.15:12000, 1.5:10000, 2.0:8000 },
-  ambos:  { 1.0:18500,1.15:17000, 1.5:14500, 2.0:12000 },
+  normas: { 1.0:8000, 1.15:7000, 1.5:6000, 2.0:5000 },
+  estilo: { 1.0:15000, 1.15:13000, 1.5:11000, 2.0:9000 },
+  ambos:  { 1.0:22000,1.15:19000, 1.5:16000, 2.0:13000 },
 };
 const NIVEL_MULT = { pregrado:1.0, especializacion:1.30, maestria:1.65, doctorado:2.15 };
 const AREA_MULT  = { admin:1.05, educacion:1.0, sociales:1.0, derecho:1.10, agro:1.10, salud:1.15, ingenieria:1.20 };
