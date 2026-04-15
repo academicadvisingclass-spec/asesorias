@@ -864,12 +864,12 @@ header p {
 //  DATA
 // ════════════════════════════════
 const BASE_PRICES = {
-  normas: { 1.0:8000, 1.15:7000, 1.5:6000, 2.0:5000 },
-  estilo: { 1.0:12000, 1.15:10000, 1.5:8000, 2.0:6000 },
-  ambos:  { 1.0:19000,1.15:16000, 1.5:13000, 2.0:10000 },
+  normas: { 1.0:6500, 1.15:6000, 1.5:5500, 2.0:5000 },
+  estilo: { 1.0:10500, 1.15:9000, 1.5:7500, 2.0:6000 },
+  ambos:  { 1.0:16000,1.15:14000, 1.5:12000, 2.0:10000 },
 };
 const NIVEL_MULT = { pregrado:1.0, especializacion:1.30, maestria:1.65, doctorado:2.15 };
-const AREA_MULT  = { sociales:1.05, ingenieria:1.0, salud:1.0, exactas:1.10, economia:1.05, derecho:1.15, educacion:1.15 };
+const AREA_MULT  = { admin:1.05, educacion:1.0, sociales:1.0, derecho:1.10, agro:1.10, salud:1.15, ingenieria:1.20 };
 const URG_MULT   = { normal:1.0, express:1.25, urgente:1.5 };
 
 const INCLUDES = {
@@ -881,7 +881,7 @@ INCLUDES.ambos = [...new Set([...INCLUDES.normas,...INCLUDES.estilo])];
 const SRV_LBL  = { normas:'Solo Normas de Escritura', estilo:'Solo Corrección de Estilo', ambos:'Estilo + Normas' };
 const NIV_LBL  = { pregrado:'Pregrado', especializacion:'Especialización', maestria:'Maestría', doctorado:'Doctorado' };
 const DOC_LBL  = { tesis:'Tesis / Trabajo de grado', articulo:'Artículo científico', ensayo:'Ensayo académico', informe:'Informe / Reporte', otro:'Otro' };
-const AREA_LBL = { sociales:'Administrativas y Económicas', ingenieria:'Educación', salud:'Sociales, Artes y Humanidades', exactas:'Jurídicas y Políticas', economia:'Agrícolas y Medio Ambiente', derecho:'Salud', educacion:'Exactas e Ingeniería' };
+const AREA_LBL = { admin:'Administrativas y Económicas', educacion:'Educación', sociales:'Sociales, Artes y Humanidades', derecho:'Jurídicas y Políticas', agro:'Agrícolas y Medio Ambiente', salud:'Salud', ingenieria:'Exactas e Ingeniería' };
 const NRM_LBL  = { apa7:'APA 7.ª ed.', icontec:'ICONTEC', chicago:'Chicago', harvard:'Harvard', vancouver:'Vancouver', ieee:'IEEE', propio:'Formato propio' };
 const URG_LBL  = { normal:'Normal', express:'Express (+25%)', urgente:'Urgente (+50%)' };
 
