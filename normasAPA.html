@@ -1007,19 +1007,24 @@ function render(){
     setText('mob-days', dStr);
 
     const spacingLabel = S.spacing===1.0?'Sencillo (1.0)':S.spacing===1.15?'Predeterminado (1.15)':S.spacing===1.5?'Intermedio (1.5)':'Doble (2.0)';
-    const normaLine = S.service!=='estilo'?`📐 Norma aplicada: *${NRM_LBL[S.norma]}*`:null;
+    const normaLine = S.service!=='estilo'?`▸ Norma aplicada: *${NRM_LBL[S.norma]}*`:null;
     const msg=[
       `Hola Andrés, quiero cotizar una corrección académica.`,
-      `*DETALLES DEL DOCUMENTO*`,
+      ` `,
+      `*----- DETALLES DEL DOCUMENTO -----*`,
       `▸ Servicio: *${SRV_LBL[S.service]}*`,
       `▸ Nivel: *${NIV_LBL[S.nivel]}*`,
       `▸ Área: *${AREA_LBL[S.area]}*`,
       S.doc ? `▸ Tipo: *${DOC_LBL[S.doc]}*` : null,
-      `▸ Páginas: *${S.pages}* · Interlineado: *${spacingLabel}*`,
+      `▸ Páginas: *${S.pages}*`,
+      `▸ Interlineado: *${spacingLabel}*`,
       normaLine,
+      ` `,
+      `*----- DETALLES DE COTIZACIÓN -----*`,
       `▸ Urgencia: *${URG_LBL[S.urgency]}*`,
       `▸ *Estimación:* ${cop(total)}`,
       `▸ *Tiempo estimado:* ${dStr}`,
+      ` `,
       `%0AQuedo atento/a. ¡Gracias!`,
     ].filter(Boolean).join('%0A');
     const waLink=`https://wa.me/573215840927?text=${msg}`;
